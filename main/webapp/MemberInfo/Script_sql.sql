@@ -7,7 +7,7 @@ Create table mbTbl (
     name varchar2(100) not null,
     email varchar2(100) not null,
     city varchar2(100) null,
-    phone varchar2(1000) null);
+    phone varchar2(100) null);
     
     select * from mbTbl;
     

@@ -13,21 +13,27 @@
 
 <%
 	request.setCharacterEncoding("UTF-8");	//폼에서 넘긴 한글처리하기 위함
+	
+	// 폼에서 넘긴 값을 변수에 담는다.
 	String id = request.getParameter("id");	//request.getParameter은 Insert01의 form에서 값을 받아온다
 	String passwd = request.getParameter("passwd");
 	String name = request.getParameter("name");
 	String email = request.getParameter("email");
 	
-	Statement stmt = null;		//Statement 객체 : SQL 쿼리 구문을 담아서 실행하는 객체
+	PreparedStatement pstmt = null;		//Statement 객체 : SQL 쿼리 구문을 담아서 실행하는 객체
 	String sql = null; // 전역 변수
 	try{
-		sql = "INSERT INTO mbTbl(idx, id, pass, name, email)Values(seq_mbTbl_idx.nextval,'"+id+"', '"+passwd+"', '"+name+"', '"+email+"')";
+		sql = "INSERT INTO mbTbl(idx, id, pass, name, email)Values(seq_mbTbl_idx.nextval,?,?,?,?)";
 		
-		stmt = conn.createStatement();	//connection 객체를 통해서 statement 객체 생성
-		//conn은 dbconn_oracle.jsp에서 생성한 객체
-		stmt.executeUpdate(sql);		//statement 객체를 통해서 sql을 실햄함.
-				//stmt.excuteUpdate (sql) : sql<== Insert, Update, Delete 문이 온다 
-				//stmt.excuteQuery (sql) : sql <== select 문이 오면서 결과를 Resultset 객체로 반환
+		pstmt = conn.prepareStatement(sql); 	// PreparedStatement 객체 생성시에 sql 문을 넣는다.
+		pstmt.setString(1,id);
+		pstmt.setString(2,passwd);
+		pstmt.setString(3,name);
+		pstmt.setString(4,email);
+		pstmt.executeUpdate(); 
+				//stmt.excuteUpdate () : sql<== Insert, Update, Delete 문이 온다 
+				//stmt.excuteQuery () : sql <== select 문이 오면서 결과를 Resultset 객체로 반환
+				
 		out.println("테이블 삽입에 성공 했습니다. ");
 		out.println ("<p> <p>");
 		//out.println(sql);
@@ -39,8 +45,8 @@
 		//out.println(sql);
 		
 	}finally {
-		if(stmt != null)
-			stmt.close();
+		if(pstmt != null)
+			pstmt.close();
 		if(conn !=null)
 			conn.close();
 	}
