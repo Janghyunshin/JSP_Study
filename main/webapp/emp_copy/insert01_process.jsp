@@ -26,7 +26,7 @@
 	Statement stmt = null;
 	
 	try {
-		String sql = "INSERT INTO emp_copy (eno, ename, job, manager, hiredate, salary, commission, dno)values('"+eno+"', '"+ename+"', '"+job+"', '"+manager+"', '"+hiredate+"', '"+salary+"', '"+commission+"', '"+dno+"')";
+		String sql = "INSERT INTO emp_copy (eno, ename, job, manager, hiredate, salary, commission, dno) values('"+eno+"', '"+ename+"', '"+job+"', '"+manager+"', '"+hiredate+"', '"+salary+"', '"+commission+"', '"+dno+"')";
 		stmt = conn.createStatement();
 		stmt.executeUpdate(sql);
 		out.println("테이블 삽입에 성공 했습니다. ");

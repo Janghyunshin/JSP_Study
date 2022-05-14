@@ -57,10 +57,12 @@
 			   out.println("<tr align='center'>");
 			   out.println("<td height='1' bgcolor='#1F4F8F'></td>");
 			   out.println("</tr>");
+			   
 			   out.println("<tr align='center' bgcolor='#DFEDFF'>");
 			   out.println("<td class='button' bgcolor='#DFEDFF'>"); 
 			   out.println("<div align='left'><font size='2'>"+rs.getString("subject") + "</div> </td>");
 			   out.println("</tr>");
+			   
 			   out.println("<tr align='center' bgcolor='#FFFFFF'>");
 			   out.println("<td align='center' bgcolor='#F4F4F4'>"); 
 			   out.println("<table width='100%' border='0' cellpadding='0' cellspacing='4' height='1'>");
@@ -70,12 +72,14 @@
 			   out.println("<td width='25%' height='7'></td>");
 			   out.println("<td width='11%' height='7'></td>");
 			   out.println("</tr>");
+			   
 			   out.println("<tr bgcolor='#F4F4F4'>");
 			   out.println("<td width='13%'></td>");
 			   out.println("<td width='51%'>작성일 : " + rs.getString("inputdate") + "</td>");
 			   out.println("<td width='25%'>조회 : "+(rs.getInt("readcount")+1)+"</td>");
 			   out.println("<td width='11%'></td>");
 			   out.println("</tr>");
+			   
 			   out.println("</table>");
 			   out.println("</td>");
 			   out.println("</tr>");
