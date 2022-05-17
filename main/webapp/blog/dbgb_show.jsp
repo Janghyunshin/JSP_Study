@@ -12,106 +12,21 @@
 <title>컬럼의 특정 레코드를 읽는 페이지</title>
 </head>
 <body>
-
-<%
-	String sql = null;
-	PreparedStatement pstmt = null;
-	ResultSet rs = null;
-	
-	String name = request.getParameter("name");
-	
-	try {
-		sql  = "select * from guestboard where name = ? ";
-		pstmt  = conn.prepareStatement(sql);
-		pstmt.setString(1, name);
-		rs = pstmt.executeQuery();
-		
-		while ( (rs.next())) { 	// 값이  존재 하는 < !  주의 >
-			String em = rs.getString("email");
-			String na = rs.getString("name");
-			String in= rs.getString("inputdate");
-			String sub = rs.getString("subject");
-			String cnt = rs.getString("content");
-			
-	%>
-			
-			<tr>
-				<td> <%= em %> </td>
-				<td> <%= na %> </td>
-				<td> <%= in %> </td>
-				<td> <%= sub %> </td>
-				<td> <%= cnt %> </td>
-			</tr>			
-		
-	<% 
-		 }
-		
-
-		// out.println (em);
-		
-		// 서블릿으로 출력, 서블릿 : JAVA에서 웹페이지를 출력할 수 있는 Java 페이지
-		   out.println("<table width='600' cellspacing='0' cellpadding='2' align='center'>");
-		   out.println("<tr>");
-		   out.println("<td height='22'>&nbsp;</td></tr>");
-		   out.println("<tr align='center'>");
-		   out.println("<td height='1' bgcolor='#1F4F8F'></td>");
-		   out.println("</tr>");
-		   
-		   out.println("<tr align='center' bgcolor='#DFEDFF'>");
-		   out.println("<td class='button' bgcolor='#DFEDFF'>"); 
-		   out.println("<div align='left'><font size='2'>"+ rs.getString("subject") + "</div> </td>");
-		   out.println("</tr>");
-		   
-		   out.println("<tr align='center' bgcolor='#FFFFFF'>");
-		   out.println("<td align='center' bgcolor='#F4F4F4'>"); 
-		   out.println("<table width='100%' border='0' cellpadding='0' cellspacing='4' height='1'>");
-		   out.println("<tr bgcolor='#F4F4F4'>");
-		   out.println("<td width='13%' height='7'></td>");
-		   out.println("<td width='51%' height='7'>글쓴이 : " + rs.getString("name")+ " 글쓴이 : " + rs.getString("email") +"</td>");
-		   out.println("<td width='25%' height='7'></td>");
-		   out.println("<td width='11%' height='7'></td>");
-		   out.println("</tr>");
-		   
-		   out.println("<tr bgcolor='#F4F4F4'>");
-		   out.println("<td width='13%'></td>");
-		   out.println("<td width='51%'>작성일 : " + rs.getString("inputdate") + "</td>");
-		   out.println("<td width='25%'></td>");
-		   out.println("<td width='11%'></td>");
-		   out.println("</tr>");
-		   
-		   out.println("</table>");
-		   out.println("</td>");
-		   out.println("</tr>");
-		   out.println("<tr align='center'>");
-		   out.println("<td bgcolor='#1F4F8F' height='1'></td>");
-		   out.println("</tr>");
-		   out.println("<tr align='center'>");
-		   out.println("<td style='padding:10 0 0 0'>");
-		   out.println("<div align='left'><br>");
-		   out.println("<font size='3' color='#333333'><PRE>"+rs.getString("content") + "</PRE></div>");
-		   out.println("<br>");
-		   out.println("</td>");
-		   out.println("</tr>");
-		   out.println("<tr align='center'>");
-		   out.println("<td class='button' height='1'></td>");
-		   out.println("</tr>");
-		   out.println("<tr align='center'>");
-		   out.println("<td bgcolor='#1F4F8F' height='1'></td>");
-		   out.println("</tr>");
-		   out.println("</table>");
-		   
-	} catch (Exception ex) {
-		out.println(ex.getMessage());
-	} 
-		   
-		   %>
-
-
+<P>
+<P align=center><FONT color=#0000ff face=굴림 size=3><STRONG>자유 게시판</STRONG></FONT></P> 
+<P>
+<CENTER>
+ <TABLE border=0 width=600 cellpadding=4 cellspacing=0>
+  <tr align="center"> 
+   <td colspan="5" height="1" bgcolor="#1F4F8F"></td>
+  </tr>
+ 
 <%  	// Vector : 멀티스레드 환경에서 사용, 모든 메소드가 동기화 처리되어 있음. 
-	Vector vname =new Vector();			// DB의 Name 값만 저장하는 벡터
+	Vector name =new Vector();			// DB의 Name 값만 저장하는 벡터
 	Vector inputdate=new Vector();
 	Vector email=new Vector();
 	Vector subject=new Vector();
+	Vector content=new Vector();
 	
 	// 페이징 처리 시작 부분
 	
@@ -152,16 +67,22 @@
 	int priorpage = where-1;			// 이전페이지 : 현재페이지 - 1
 	int startrow=0;				// 하나의 page에서 레코드 시작 번호
 	int endrow=0;					// 하나의 page에서 레코드 마지막 번호
-	int maxrows=5;					// 출력할 레코드 수 
+	int maxrows=2;					// 출력할 레코드 수 
 	int totalrows=0;				// 총 레코드 갯수
 	int totalpages=0;				// 총 페이지 갯수
 	
 	// 페이징 처리 마지막 부분 
 	
+	// 전역변수 선언
+	ResultSet rs = null;
+	String sql = null;
+	PreparedStatement pstmt = null;
+
 	try {
+	sql = "select * from guestboard ";
 	pstmt = conn.prepareStatement(sql);
-	sql = "select * from guestboard " ;
-	// rs = pstmt.executeQuery();
+	rs = pstmt.executeQuery();
+	
 
 	if (!(rs.next()))  {
 	 out.println("게시판에 올린 글이 없습니다");
@@ -169,18 +90,17 @@
 		 do {
 		   // Database 값을 가져와서 각각의 vector에 저장
 		   
-	  vname.addElement(rs.getString("name"));
+	  name.addElement(rs.getString("name"));
 	  email.addElement(rs.getString("email"));
 	  String idate = rs.getString("inputdate");
 	  idate = idate.substring(0,8);
 	  inputdate.addElement(idate);
 	  subject.addElement(rs.getString("subject"));
-	  
-	  
+	  content.addElement(rs.getString("content"));
 	  
 	 } while(rs.next());
 	 
-	 totalrows = vname.size(); 				// name vector에 저장된 값의 갯수	, 총 레코드 수 
+	 totalrows = name.size(); 				// name vector에 저장된 값의 갯수	, 총 레코드 수 
 	 totalpages = (totalrows-1)/maxrows +1;
 	 startrow = (where-1) * maxrows; 			// 현재 페이지의 시작 레코드 번호
 	 endrow = startrow+maxrows-1  ;			// 현재 페이지의 마지막 레코드 번호
@@ -195,25 +115,80 @@
  
  	if (endpage > totalpages) 
   	endpage=totalpages;
-
- 	}
-
-	// for 블락의 마지막 
+	}
 	
-	out.println("</TABLE>");
-
-
+ 	for (int j = startrow; j<=endrow; j++ ) {
+	   out.println("<table width='600' cellspacing='0' cellpadding='2' align='center'>");
+	   out.println("<tr>");
+	   out.println("<td height='22'>&nbsp;</td></tr>");
+	   out.println("<tr align='center'>");
+	   out.println("<td height='1' bgcolor='#1F4F8F'></td>");
+	   out.println("</tr>");
+	   
+	   out.println("<tr align='center' bgcolor='#DFEDFF'>");
+	   out.println("<td class='button' bgcolor='#DFEDFF'>"); 
+	   out.println("<div align='left'><font size='2'>"+ subject.elementAt(j) + "</div> </td>");
+	   out.println("</tr>");
+	   
+	   out.println("<tr align='center' bgcolor='#FFFFFF'>");
+	   out.println("<td align='center' bgcolor='#F4F4F4'>"); 
+	   out.println("<table width='100%' border='0' cellpadding='0' cellspacing='4' height='1'>");
+	   out.println("<tr bgcolor='#F4F4F4'>");
+	   out.println("<td width='13%' height='7'></td>");
+	   out.println("<td width='51%' height='7'>글쓴이 : " + name.elementAt(j) +"</td>");
+	   out.println("<td width='51%' height='7'>E-mail : " + email.elementAt(j) +"</td>");
+	   out.println("<td width='25%' height='7'></td>");
+	   out.println("<td width='11%' height='7'></td>");
+	   out.println("</tr>");
+	   
+	   out.println("<tr bgcolor='#F4F4F4'>");
+	   out.println("<td width='13%'></td>");
+	   out.println("<td width='51%'>작성일 : " + inputdate.elementAt(j)+ "</td>");
+	   out.println("<td width='25%'></td>");
+	   out.println("<td width='11%'></td>");
+	   out.println("</tr>");
+	   
+	   out.println("</table>");
+	   out.println("</td>");
+	   out.println("</tr>");
+	   out.println("<tr align='center'>");
+	   out.println("<td bgcolor='#1F4F8F' height='1'></td>");
+	   out.println("</tr>");
+	   out.println("<tr align='center'>");
+	   out.println("<td style='padding:10 0 0 0'>");
+	   out.println("<div align='left'><br>");
+	   out.println("<font size='3' color='#333333'><PRE>"+ content.elementAt(j) + "</PRE></div>");
+	   out.println("<br>");
+	   out.println("</td>");
+	   out.println("</tr>");
+	   out.println("<tr align='center'>");
+	   out.println("<td class='button' height='1'></td>");
+	   out.println("</tr>");
+	   out.println("<tr align='center'>");
+	   out.println("<td bgcolor='#1F4F8F' height='1'></td>");
+	   out.println("</tr>");
+	   out.println("</table>");
+ 	}
+ 	rs.close();
+ 	
+   } catch(java.sql.SQLException e) {
+	   out.println(e);
+   }
+	
 	if (wheregroup > 1) { 	// 현재 나의 그룹이 1 이상일때는 
+	
 	out.println("[<A href=dbgb_show.jsp?gogroup=1>처음</A>]"); 
 	out.println("[<A href=dbgb_show.jsp?gogroup="+priorgroup +">이전</A>]");
 
+
 	} else { 	// 현재 나의 그룹이 1 이상이 아닐때 
-	 
+ 
 	out.println("[처음]") ;
 	out.println("[이전]") ;
+
 	}
 
-	if (vname.size() !=0) { 
+	if (name.size() !=0) { 
 	for(int jj=startpage; jj<=endpage; jj++) {
  		if (jj==where) 
  	 	out.println("["+jj+"]") ;
@@ -230,15 +205,13 @@
  	out.println("[다음]");
  	out.println("[마지막]");
 	}
-	out.println ("전체 글수 :"+totalrows); 
+	
+	
+	
 
-	} catch (java.sql.SQLException e) {
-		out.println(e);
-	} finally {
-		pstmt.close();
-		conn.close();
-		 rs.close();
-	}	
+
+	
+	
 	%>
 <TABLE border=0 width=600 cellpadding=0 cellspacing=0>
  <TR>
